@@ -5,6 +5,14 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.View
 
+/**
+ *
+ * Package:        cn.quibbler.circleprogress
+ * ClassName:      CircleProgress
+ * Description:    Customizable circular progress bar
+ * Author:         Quibbler
+ * CreateDate:     2022/08/01 10:09
+ */
 class CircleProgress : View {
 
     constructor(context: Context?) : this(context, null)
