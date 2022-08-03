@@ -85,7 +85,9 @@ class CircleProgress : View {
 
     private var mStartDegree = DEFAULT_START_DEGREE
     private var mDrawBackgroundOutSideProgress = false
-    
+
+    private var mProgressFormatter: ProgressFormatter? = DefaultProgressFormatter()
+
     private var mStyle = LINE
 
     private var mShader = LINEAR
@@ -119,6 +121,26 @@ class CircleProgress : View {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+    }
+
+    /**
+     *
+     */
+    interface ProgressFormatter {
+        fun format(progress: Int, max: Int): CharSequence
+    }
+
+    /**
+     * Default ProgressFormatter
+     */
+    class DefaultProgressFormatter : ProgressFormatter {
+        companion object {
+            private const val DEFAULT_PATTERN = "%d%%"
+        }
+
+        override fun format(progress: Int, max: Int): CharSequence {
+            return String.format(DEFAULT_PATTERN, (progress.toFloat() / max.toFloat() * 100).toInt())
+        }
     }
 
 }
