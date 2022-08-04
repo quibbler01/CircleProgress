@@ -2,11 +2,67 @@
 <resources>
 
     <declare-styleable name="CircleProgress">
-        <attr name="progress_style">
-            <enum name="LINE">0</enum>
-            <enum name="SOLID">1</enum>
-            <enum name="SOLID_LINE">2</enum>
+
+        <!--number of lines,takes effect when [progress_style] is [line]-->
+        <attr name="line_count" format="integer|reference" />
+
+        <!--the width of the line-->
+        <attr name="line_width" format="dimension|reference" />
+
+        <!--starting color, can be used for gradients with [progress_end_color]-->
+        <attr name="progress_start_color" format="color|reference" />
+        <!--end color, can be used for gradients with [progress_start_color]-->
+        <attr name="progress_end_color" format="color|reference" />
+
+        <!--progress text color-->
+        <attr name="progress_text_color" format="color|reference" />
+        <!--progress text size-->
+        <attr name="progress_text_size" format="dimension|reference" />
+
+        <!--progress stroke width-->
+        <attr name="progress_stroke_width" format="dimension|reference" />
+
+        <!--progress background color-->
+        <attr name="progress_background_color" format="color|reference" />
+
+        <!--progress start degree-->
+        <attr name="progress_start_degree" format="integer|reference" />
+
+        <!--draw background out side progress   -->
+        <attr name="drawBackgroundOutSideProgress" format="boolean|reference" />
+
+        <!--progress blur radius-->
+        <attr name="progress_blur_radius" format="dimension|reference" />
+
+        <!--progress blur style-->
+        <attr name="progress_blur_style">
+            <enum name="normal" value="0" />
+            <enum name="solid" value="1" />
+            <enum name="outer" value="2" />
+            <enum name="inner" value="3" />
         </attr>
+
+        <!--progress style-->
+        <attr name="progress_style">
+            <enum name="line" value="0" />
+            <enum name="solid" value="1" />
+            <enum name="solid_line" value="2" />
+        </attr>
+
+        <!--progress color gradient shader-->
+        <attr name="progress_shader">
+            <enum name="linear" value="0" />
+            <enum name="radial" value="1" />
+            <enum name="sweep" value="2" />
+        </attr>
+
+        <!--progress stroke cap,the same as {@link Paint.Cap}-->
+        <attr name="progress_stroke_cap">
+            <enum name="butt" value="0" />
+            <enum name="round" value="1" />
+            <enum name="square" value="2" />
+        </attr>
+
     </declare-styleable>
 
 </resources>
