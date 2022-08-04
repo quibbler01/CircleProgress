@@ -1,12 +1,10 @@
 package cn.quibbler.circleprogress
 
 import android.content.Context
-import android.graphics.BlurMaskFilter
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import androidx.annotation.IntDef
 
 /**
  *
@@ -88,8 +86,10 @@ class CircleProgress : View {
 
     private var mProgressFormatter: ProgressFormatter? = DefaultProgressFormatter()
 
+    @Style
     private var mStyle = LINE
 
+    @ShaderMode
     private var mShader = LINEAR
 
     private var mCap = Paint.Cap.BUTT
@@ -142,5 +142,13 @@ class CircleProgress : View {
             return String.format(DEFAULT_PATTERN, (progress.toFloat() / max.toFloat() * 100).toInt())
         }
     }
+
+    @Retention(AnnotationRetention.SOURCE)
+    @IntDef(LINE, SOLID, SOLID_LINE)
+    private annotation class Style
+
+    @Retention(AnnotationRetention.SOURCE)
+    @IntDef(LINEAR, RADIAL, SOLID_LINE)
+    private annotation class ShaderMode
 
 }
