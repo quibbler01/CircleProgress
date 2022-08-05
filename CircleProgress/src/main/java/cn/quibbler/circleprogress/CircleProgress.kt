@@ -98,19 +98,46 @@ class CircleProgress : View {
 
     private var mBlurStyle = BlurMaskFilter.Blur.INNER
 
-    constructor(context: Context?) : this(context, null)
+    constructor(context: Context) : this(context, null)
 
-    constructor(context: Context?, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : this(context, attrs, defStyleAttr, 0)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : this(context, attrs, defStyleAttr, 0)
 
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes) {
-        initFromAttribute(attrs)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes) {
+        initFromAttribute(context, attrs)
         initPaint()
     }
 
-    private fun initFromAttribute(attrs: AttributeSet?) {
+    private fun initFromAttribute(context: Context, attrs: AttributeSet?) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.CircleProgress)
+
+        mLineCount = a.getInt(R.styleable.CircleProgress_line_count, DEFAULT_LINE_COUNT)
+        mLineWidth = a.getDimensionPixelSize(R.styleable.CircleProgress_line_width, dip2px(context, DEFAULT_LINE_WIDTH)).toFloat()
+
+        mStyle = a.getInt(R.styleable.CircleProgress_progress_style, LINE)
+        mShader = a.getInt(R.styleable.CircleProgress_progress_shader, LINEAR)
+        mCap = if (a.hasValue(R.styleable.CircleProgress_progress_stroke_cap)) Paint.Cap.values()[a.getInt(R.styleable.CircleProgress_progress_stroke_cap, 0)] else Paint.Cap.BUTT
+
+        mProgressTextSize = a.getDimensionPixelSize(R.styleable.CircleProgress_progress_text_size, dip2px(context, DEFAULT_PROGRESS_TEXT_SIZE)).toFloat()
+        mProgressStrokeWidth = a.getDimensionPixelSize(R.styleable.CircleProgress_progress_stroke_width, dip2px(context, DEFAULT_PROGRESS_STROKE_WIDTH)).toFloat();
+
+        mProgressStartColor = a.getColor(R.styleable.CircleProgress_progress_start_color, COLOR_FFF2A670)
+        mProgressEndColor = a.getColor(R.styleable.CircleProgress_progress_end_color, COLOR_FFF2A670)
+        mProgressTextColor = a.getColor(R.styleable.CircleProgress_progress_text_color, COLOR_FFF2A670)
+        mProgressBackgroundColor = a.getColor(R.styleable.CircleProgress_progress_background_color, COLOR_FFD3D3D5)
+
+        mStartDegree = a.getInt(R.styleable.CircleProgress_progress_start_degree, DEFAULT_START_DEGREE)
+        mDrawBackgroundOutSideProgress = a.getBoolean(R.styleable.CircleProgress_drawBackgroundOutSideProgress, false)
+
+        mBlurRadius = a.getDimensionPixelOffset(R.styleable.CircleProgress_progress_blur_radius, 0)
+        val blueStyle: Int = a.getInt(R.styleable.CircleProgress_progress_blur_style, 0)
+        mBlurStyle = when (blueStyle) {
+            1 -> BlurMaskFilter.Blur.SOLID
+            2 -> BlurMaskFilter.Blur.OUTER
+            3 -> BlurMaskFilter.Blur.INNER
+            else -> BlurMaskFilter.Blur.NORMAL
+        }
 
         a.recycle()
     }
