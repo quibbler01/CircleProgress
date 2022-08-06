@@ -143,7 +143,28 @@ class CircleProgress : View {
     }
 
     private fun initPaint() {
+        mProgressTextPaint.textAlign = Paint.Align.CENTER
+        mProgressTextPaint.textSize = mProgressTextSize
 
+        mProgressPaint.style = if (mStyle == SOLID) Paint.Style.FILL else Paint.Style.STROKE
+        mProgressPaint.strokeWidth = mProgressStrokeWidth
+        mProgressPaint.color = mProgressStartColor
+        mProgressPaint.strokeCap = mCap
+        updateMaskBlurFilter()
+
+        mProgressBackgroundPaint.style = if (mStyle == SOLID) Paint.Style.FILL else Paint.Style.STROKE
+        mProgressBackgroundPaint.strokeWidth = mProgressStrokeWidth
+        mProgressBackgroundPaint.color = mProgressBackgroundColor
+        mProgressBackgroundPaint.strokeCap = mCap
+    }
+
+    private fun updateMaskBlurFilter() {
+        if (mBlurRadius > 0) {
+            setLayerType(LAYER_TYPE_SOFTWARE, mProgressPaint)
+            mProgressPaint.maskFilter = BlurMaskFilter(mBlurRadius.toFloat(), mBlurStyle)
+        } else {
+            mProgressPaint.maskFilter = null
+        }
     }
 
     override fun onDraw(canvas: Canvas?) {
