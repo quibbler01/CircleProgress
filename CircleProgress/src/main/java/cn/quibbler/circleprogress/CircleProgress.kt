@@ -167,6 +167,38 @@ class CircleProgress : View {
         }
     }
 
+    /**
+     *
+     */
+    private fun updateProgressShader() {
+        if (mProgressStartColor != mProgressEndColor) {
+            var shader: Shader? = null
+            when (mShader) {
+                LINEAR -> {
+                    shader = LinearGradient(mProgressRectF.left, mProgressRectF.top, mProgressRectF.left, mProgressRectF.bottom, mProgressStartColor, mProgressEndColor, Shader.TileMode.CLAMP)
+                    val matrix: Matrix = Matrix()
+                    matrix.setRotate(LINEAR_START_DEGREE, mCenterX, mCenterY)
+                    shader.setLocalMatrix(matrix)
+                }
+                RADIAL -> {
+                    shader = RadialGradient(mCenterX, mCenterY, mRadius, mProgressStartColor, mProgressEndColor, Shader.TileMode.CLAMP)
+                }
+                SWEEP -> {
+                    val radian = (mProgressStrokeWidth / Math.PI * 2.0f / mRadius)
+                    val rotateDegrees: Float = -(if (mCap == Paint.Cap.BUTT && mStyle == SOLID_LINE) 0f else Math.toDegrees(radian).toFloat())
+                    shader = SweepGradient(mCenterX, mCenterY, intArrayOf(mProgressStartColor, mProgressEndColor), floatArrayOf(0.0f, 1.0f))
+                    val matrix: Matrix = Matrix()
+                    matrix.setRotate(rotateDegrees, mCenterX, mCenterY)
+                    shader.setLocalMatrix(matrix)
+                }
+            }
+            mProgressPaint.shader = shader
+        } else {
+            mProgressPaint.shader = null
+            mProgressPaint.color = mProgressStartColor
+        }
+    }
+
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
     }
