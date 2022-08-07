@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.IntDef
 import kotlin.math.cos
+import kotlin.math.min
 import kotlin.math.sin
 
 /**
@@ -289,6 +290,25 @@ class CircleProgress : View {
             canvas?.drawArc(mProgressRectF, 0f, MAX_DEGREE, true, mProgressBackgroundPaint)
         }
         canvas?.drawArc(mProgressRectF, 0f, MAX_DEGREE * mProgress / mMax, true, mProgressPaint)
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        mBoundsRectF.left = paddingLeft.toFloat()
+        mBoundsRectF.top = paddingTop.toFloat()
+        mBoundsRectF.right = w - paddingRight.toFloat()
+        mBoundsRectF.bottom = h - paddingBottom.toFloat()
+
+        mCenterX = mBoundsRectF.centerX()
+        mCenterY = mBoundsRectF.centerY()
+
+        mRadius = min(mBoundsRectF.width(), mBoundsRectF.height()) / 2
+
+        mProgressRectF.set(mBoundsRectF)
+
+        updateProgressShader()
+
+        mProgressRectF.inset(mProgressStrokeWidth / 2, mProgressStrokeWidth / 2)
     }
 
     /**
