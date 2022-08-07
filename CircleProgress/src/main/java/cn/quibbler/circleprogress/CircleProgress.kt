@@ -2,6 +2,8 @@ package cn.quibbler.circleprogress
 
 import android.content.Context
 import android.graphics.*
+import android.os.Parcel
+import android.os.Parcelable
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
@@ -311,6 +313,19 @@ class CircleProgress : View {
         mProgressRectF.inset(mProgressStrokeWidth / 2, mProgressStrokeWidth / 2)
     }
 
+    override fun onSaveInstanceState(): Parcelable {
+        val superState = super.onSaveInstanceState()
+        val ss: SavedState = SavedState(superState)
+        ss.progress = mProgress
+        return ss
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        val ss = state as SavedState
+        super.onRestoreInstanceState(state)
+        mProgress = ss.progress
+    }
+
     /**
      *
      */
@@ -329,6 +344,38 @@ class CircleProgress : View {
         override fun format(progress: Int, max: Int): CharSequence {
             return String.format(DEFAULT_PATTERN, (progress.toFloat() / max.toFloat() * 100).toInt())
         }
+    }
+
+    private class SavedState : BaseSavedState {
+
+        companion object {
+            @JvmField
+            val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.Creator<SavedState> {
+                override fun createFromParcel(p: Parcel): SavedState {
+                    return SavedState(p)
+                }
+
+                override fun newArray(size: Int): Array<SavedState?> {
+                    return arrayOfNulls<SavedState>(size)
+                }
+            }
+        }
+
+        var progress = 0
+
+        constructor(source: Parcel) : this(source, null) {
+            progress = source.readInt()
+        }
+
+        constructor(source: Parcel?, loader: ClassLoader?) : super(source, loader)
+
+        constructor(superState: Parcelable?) : super(superState)
+
+        override fun writeToParcel(out: Parcel, flags: Int) {
+            super.writeToParcel(out, flags)
+            out.writeInt(progress)
+        }
+
     }
 
     @Retention(AnnotationRetention.SOURCE)
