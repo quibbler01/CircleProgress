@@ -2,9 +2,12 @@ package cn.quibbler.circleprogress
 
 import android.content.Context
 import android.graphics.*
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.IntDef
+import kotlin.math.cos
+import kotlin.math.sin
 
 /**
  *
@@ -201,6 +204,91 @@ class CircleProgress : View {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+
+        canvas?.save()
+        canvas?.rotate(mStartDegree.toFloat(), mCenterX, mCenterY)
+        drawProgress(canvas)
+        canvas?.restore()
+
+        drawProgressText(canvas)
+    }
+
+    private fun drawProgressText(canvas: Canvas?) {
+        val progressText: CharSequence = mProgressFormatter?.format(mProgress, mMax) ?: ""
+        if (TextUtils.isEmpty(progressText)) return
+
+        mProgressTextPaint.textSize = mProgressTextSize
+        mProgressTextPaint.color = mProgressTextColor
+        mProgressTextPaint.getTextBounds(progressText.toString(), 0, progressText.length, mProgressTextRect)
+        canvas?.drawText(progressText, 0, progressText.length, mCenterX, mCenterY + mProgressTextRect.height() / 2, mProgressTextPaint)
+    }
+
+    private fun drawProgress(canvas: Canvas?) {
+        when (mStyle) {
+            SOLID -> {
+                drawSolidProgress(canvas)
+            }
+            SOLID_LINE -> {
+                drawSolidLineProgress(canvas)
+            }
+            LINE -> {
+                drawLineProgress(canvas)
+            }
+            else -> {
+                drawLineProgress(canvas)
+            }
+        }
+    }
+
+    private fun drawLineProgress(canvas: Canvas?) {
+        val unitDegrees: Float = (2f * Math.PI / mLineCount).toFloat()
+        val outerCircleRadius: Float = mRadius
+        val interCircleRadius: Float = mRadius - mLineWidth
+
+        val progressLineCount: Int = (mProgress.toFloat() / mMax.toFloat() * mLineCount).toInt()
+
+        for (i in 0 until mLineCount) {
+            val rotateDegrees: Float = i * unitDegrees
+
+            val startX: Float = mCenterX + cos(rotateDegrees) * interCircleRadius
+            val startY: Float = mCenterY + sin(rotateDegrees) * interCircleRadius
+
+            val stopX: Float = mCenterX + cos(rotateDegrees) * outerCircleRadius
+            val stopY: Float = mCenterY + sin(rotateDegrees) * outerCircleRadius
+
+            if (mDrawBackgroundOutSideProgress) {
+                if (i >= progressLineCount) {
+                    canvas?.drawLine(startX, startY, stopX, stopY, mProgressBackgroundPaint)
+                }
+            } else {
+                canvas?.drawLine(startX, startY, stopX, stopY, mProgressBackgroundPaint)
+            }
+            if (i < progressLineCount) {
+                canvas?.drawLine(startX, startY, stopX, stopY, mProgressPaint)
+            }
+        }
+    }
+
+    private fun drawSolidLineProgress(canvas: Canvas?) {
+        if (mDrawBackgroundOutSideProgress) {
+            val startAngle: Float = MAX_DEGREE * mProgress / mMax
+            val sweepAngle: Float = MAX_DEGREE - startAngle
+            canvas?.drawArc(mProgressRectF, startAngle, sweepAngle, false, mProgressBackgroundPaint)
+        } else {
+            canvas?.drawArc(mProgressRectF, 0f, MAX_DEGREE, false, mProgressBackgroundPaint)
+        }
+        canvas?.drawArc(mProgressRectF, 0f, MAX_DEGREE * mProgress / mMax, false, mProgressPaint)
+    }
+
+    private fun drawSolidProgress(canvas: Canvas?) {
+        if (mDrawBackgroundOutSideProgress) {
+            val startAngle: Float = MAX_DEGREE * mProgress / mMax
+            val sweepAngle: Float = MAX_DEGREE - startAngle
+            canvas?.drawArc(mProgressRectF, startAngle, sweepAngle, true, mProgressBackgroundPaint)
+        } else {
+            canvas?.drawArc(mProgressRectF, 0f, MAX_DEGREE, true, mProgressBackgroundPaint)
+        }
+        canvas?.drawArc(mProgressRectF, 0f, MAX_DEGREE * mProgress / mMax, true, mProgressPaint)
     }
 
     /**
