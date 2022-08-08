@@ -326,6 +326,110 @@ class CircleProgress : View {
         mProgress = ss.progress
     }
 
+    fun setProgressFormatter(progressFormatter: ProgressFormatter?) {
+        mProgressFormatter = progressFormatter
+        invalidate()
+    }
+
+    fun setProgressStrokeWidth(progressStrokeWidth: Float) {
+        mProgressStrokeWidth = progressStrokeWidth
+        mProgressRectF.set(mBoundsRectF)
+
+        updateProgressShader()
+
+        mProgressRectF.inset(mProgressStrokeWidth / 2, mProgressStrokeWidth / 2)
+
+        invalidate()
+    }
+
+    fun setProgressTextSize(progressTextSize: Float) {
+        mProgressTextSize = progressTextSize
+        invalidate()
+    }
+
+    fun setProgressTextColor(progressTextColor: Int) {
+        mProgressTextColor = progressTextColor
+        invalidate()
+    }
+
+    fun setProgressStartColor(progressStartColor: Int) {
+        mProgressStartColor = progressStartColor
+        updateProgressShader()
+        invalidate()
+    }
+
+    fun setProgressEndColor(progressEndColor: Int) {
+        mProgressEndColor = progressEndColor
+        updateProgressShader()
+        invalidate()
+    }
+
+    fun setProgressBackgroundColor(progressBackgroundColor: Int) {
+        mProgressBackgroundColor = progressBackgroundColor
+        mProgressBackgroundPaint.color = mProgressBackgroundColor
+        invalidate()
+    }
+
+    fun setLineCount(lineCount: Int) {
+        mLineCount = lineCount
+        invalidate()
+    }
+
+    fun setLineWidth(lineWidth: Float) {
+        mLineWidth = lineWidth
+        invalidate()
+    }
+
+    fun setStyle(@Style style: Int) {
+        mStyle = style
+        mProgressPaint.style = if (mStyle == SOLID) Paint.Style.FILL else Paint.Style.STROKE
+        mProgressBackgroundPaint.style = if (mStyle == SOLID) Paint.Style.FILL else Paint.Style.STROKE
+        invalidate()
+    }
+
+    fun setBlurRadius(blurRadius: Int) {
+        mBlurRadius = blurRadius
+        updateMaskBlurFilter()
+        invalidate()
+    }
+
+    fun setShader(@ShaderMode shader: Int) {
+        mShader = shader
+        updateProgressShader()
+        invalidate()
+    }
+
+    fun setCap(cap: Paint.Cap) {
+        mCap = cap
+        mProgressPaint.strokeCap = mCap
+        mProgressBackgroundPaint.strokeCap = mCap
+        invalidate()
+    }
+
+    fun setStartDegree(startDegree: Int) {
+        mStartDegree = startDegree
+        invalidate()
+    }
+
+    fun setDrawBackgroundOutSideProgress(drawBackgroundOutSideProgress: Boolean) {
+        mDrawBackgroundOutSideProgress = drawBackgroundOutSideProgress
+        invalidate()
+    }
+
+    fun getProgress(): Int = mProgress
+
+    fun setProgress(progress: Int) {
+        mProgress = progress
+        invalidate()
+    }
+
+    fun getMax(): Int = mMax
+
+    fun setMax(max: Int) {
+        mMax = max
+        invalidate()
+    }
+
     /**
      *
      */
