@@ -23,6 +23,9 @@ import kotlin.math.sin
 class CircleProgress : View {
 
     companion object {
+        /**
+         * Circle Type
+         */
         const val LINE = 0
         const val SOLID = 1
         const val SOLID_LINE = 2
@@ -115,6 +118,12 @@ class CircleProgress : View {
         initPaint()
     }
 
+    /**
+     * init value from attribute in xml.
+     *
+     * @param context [Context]
+     * @param attrs [AttributeSet] to get value define in xml
+     */
     private fun initFromAttribute(context: Context, attrs: AttributeSet?) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.CircleProgress)
 
@@ -148,6 +157,11 @@ class CircleProgress : View {
         a.recycle()
     }
 
+    /**
+     * init [Paint].
+     * [mProgressTextPaint] draw text
+     * [mProgressPaint] draw progress
+     */
     private fun initPaint() {
         mProgressTextPaint.textAlign = Paint.Align.CENTER
         mProgressTextPaint.textSize = mProgressTextSize
@@ -164,6 +178,9 @@ class CircleProgress : View {
         mProgressBackgroundPaint.strokeCap = mCap
     }
 
+    /**
+     * update blur filter
+     */
     private fun updateMaskBlurFilter() {
         if (mBlurRadius > 0) {
             setLayerType(LAYER_TYPE_SOFTWARE, mProgressPaint)
@@ -174,7 +191,7 @@ class CircleProgress : View {
     }
 
     /**
-     *
+     * update progress shader, see[ShaderMode]
      */
     private fun updateProgressShader() {
         if (mProgressStartColor != mProgressEndColor) {
@@ -205,6 +222,11 @@ class CircleProgress : View {
         }
     }
 
+    /**
+     * draw progress and text.
+     *
+     * @param canvas [Canvas] draw progress
+     */
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
@@ -216,6 +238,11 @@ class CircleProgress : View {
         drawProgressText(canvas)
     }
 
+    /**
+     * draw progress text,like progress value CharSequence.
+     *
+     * @param canvas [Canvas] to be draw text on.
+     */
     private fun drawProgressText(canvas: Canvas?) {
         val progressText: CharSequence = mProgressFormatter?.format(mProgress, mMax) ?: ""
         if (TextUtils.isEmpty(progressText)) return
@@ -226,6 +253,11 @@ class CircleProgress : View {
         canvas?.drawText(progressText, 0, progressText.length, mCenterX, mCenterY + mProgressTextRect.height() / 2, mProgressTextPaint)
     }
 
+    /**
+     * draw progress depend on [mStyle]
+     *
+     * @param canvas [Canvas] to be draw Progress on.
+     */
     private fun drawProgress(canvas: Canvas?) {
         when (mStyle) {
             SOLID -> {
@@ -243,6 +275,11 @@ class CircleProgress : View {
         }
     }
 
+    /**
+     * draw Line progress
+     *
+     * @param canvas [Canvas] to be draw Line Progress on.
+     */
     private fun drawLineProgress(canvas: Canvas?) {
         val unitDegrees: Float = (2f * Math.PI / mLineCount).toFloat()
         val outerCircleRadius: Float = mRadius
@@ -272,6 +309,11 @@ class CircleProgress : View {
         }
     }
 
+    /**
+     * draw solid line progress
+     *
+     * @param canvas [Canvas] to be draw Solid Line Progress on.
+     */
     private fun drawSolidLineProgress(canvas: Canvas?) {
         if (mDrawBackgroundOutSideProgress) {
             val startAngle: Float = MAX_DEGREE * mProgress / mMax
@@ -283,6 +325,11 @@ class CircleProgress : View {
         canvas?.drawArc(mProgressRectF, 0f, MAX_DEGREE * mProgress / mMax, false, mProgressPaint)
     }
 
+    /**
+     * draw solid progress
+     *
+     * @param canvas [Canvas] to be draw Solid Progress on.
+     */
     private fun drawSolidProgress(canvas: Canvas?) {
         if (mDrawBackgroundOutSideProgress) {
             val startAngle: Float = MAX_DEGREE * mProgress / mMax
@@ -294,6 +341,16 @@ class CircleProgress : View {
         canvas?.drawArc(mProgressRectF, 0f, MAX_DEGREE * mProgress / mMax, true, mProgressPaint)
     }
 
+    /**
+     * This is called during layout when the size of this view has changed. If
+     * you were just added to the view hierarchy, you're called with the old
+     * values of 0.
+     *
+     * @param w Current width of this view.
+     * @param h Current height of this view.
+     * @param oldw Old width of this view.
+     * @param oldh Old height of this view.
+     */
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         mBoundsRectF.left = paddingLeft.toFloat()
@@ -326,14 +383,28 @@ class CircleProgress : View {
         mProgress = ss.progress
     }
 
+    /**
+     * set progress formatter for this progress.convert progress to specific text.
+     *
+     * @param progressFormatter ProgressFormatter?
+     */
     fun setProgressFormatter(progressFormatter: ProgressFormatter?) {
         mProgressFormatter = progressFormatter
         invalidate()
     }
 
+    /**
+     * set progress paint stroke width
+     *
+     * @param progressStrokeWidth Float
+     */
     fun setProgressStrokeWidth(progressStrokeWidth: Float) {
         mProgressStrokeWidth = progressStrokeWidth
         mProgressRectF.set(mBoundsRectF)
+
+        //将重新设置的Stroke Width值设置给画笔
+        mProgressPaint.setStrokeWidth(mProgressStrokeWidth);
+        mProgressBackgroundPaint.setStrokeWidth(mProgressStrokeWidth);
 
         updateProgressShader()
 
@@ -342,44 +413,85 @@ class CircleProgress : View {
         invalidate()
     }
 
+    /**
+     * set progress text size
+     *
+     * @param progressTextSize Float
+     */
     fun setProgressTextSize(progressTextSize: Float) {
         mProgressTextSize = progressTextSize
         invalidate()
     }
 
+    /**
+     * set progress text color,default is [COLOR_FFF2A670]
+     *
+     * @param progressTextColor Int
+     */
     fun setProgressTextColor(progressTextColor: Int) {
         mProgressTextColor = progressTextColor
         invalidate()
     }
 
+    /**
+     * set progress start color for Shader
+     *
+     * @param progressStartColor Int
+     */
     fun setProgressStartColor(progressStartColor: Int) {
         mProgressStartColor = progressStartColor
         updateProgressShader()
         invalidate()
     }
 
+    /**
+     * set progress end color for Shader
+     *
+     * @param progressEndColor Int
+     */
     fun setProgressEndColor(progressEndColor: Int) {
         mProgressEndColor = progressEndColor
         updateProgressShader()
         invalidate()
     }
 
+    /**
+     * set progress background color
+     *
+     * @param progressBackgroundColor Int
+     */
     fun setProgressBackgroundColor(progressBackgroundColor: Int) {
         mProgressBackgroundColor = progressBackgroundColor
         mProgressBackgroundPaint.color = mProgressBackgroundColor
         invalidate()
     }
 
+    /**
+     * set progress line count,only take effect when [mStyle] is [LINE]
+     *
+     * @param lineCount Int
+     */
     fun setLineCount(lineCount: Int) {
         mLineCount = lineCount
         invalidate()
     }
 
+    /**
+     * set line width for line progress
+     *
+     * @param lineWidth Float
+     */
     fun setLineWidth(lineWidth: Float) {
         mLineWidth = lineWidth
         invalidate()
     }
 
+    /**
+     * set style of this progress , there three option:[LINE]、[SOLID_LINE]、[SOLID]
+     * [mStyle] default is [LINE]
+     *
+     * @param style Int
+     */
     fun setStyle(@Style style: Int) {
         mStyle = style
         mProgressPaint.style = if (mStyle == SOLID) Paint.Style.FILL else Paint.Style.STROKE
@@ -387,18 +499,33 @@ class CircleProgress : View {
         invalidate()
     }
 
+    /**
+     * set blur radius, [mBlurRadius] default is 0.
+     *
+     * @param blurRadius Int
+     */
     fun setBlurRadius(blurRadius: Int) {
         mBlurRadius = blurRadius
         updateMaskBlurFilter()
         invalidate()
     }
 
+    /**
+     * shader of progress when enable,default is [LINEAR]
+     *
+     * @param shader Int
+     */
     fun setShader(@ShaderMode shader: Int) {
         mShader = shader
         updateProgressShader()
         invalidate()
     }
 
+    /**
+     * set cap for progress paint
+     *
+     * @param cap [Paint.Cap]
+     */
     fun setCap(cap: Paint.Cap) {
         mCap = cap
         mProgressPaint.strokeCap = mCap
@@ -406,32 +533,62 @@ class CircleProgress : View {
         invalidate()
     }
 
+    /**
+     * set progress start degree, default is 0.
+     *
+     * @param startDegree Int
+     */
     fun setStartDegree(startDegree: Int) {
         mStartDegree = startDegree
         invalidate()
     }
 
+    /**
+     * whether draw background out side of this progress.default is false
+     *
+     * @param drawBackgroundOutSideProgress Boolean
+     */
     fun setDrawBackgroundOutSideProgress(drawBackgroundOutSideProgress: Boolean) {
         mDrawBackgroundOutSideProgress = drawBackgroundOutSideProgress
         invalidate()
     }
 
+    /**
+     * get progress
+     *
+     * @return Int
+     */
     fun getProgress(): Int = mProgress
 
+    /**
+     * set progress and update view.
+     *
+     * @param progress Int
+     */
     fun setProgress(progress: Int) {
         mProgress = progress
         invalidate()
     }
 
+    /**
+     * get max progress ,default is 100.
+     *
+     * @return Int
+     */
     fun getMax(): Int = mMax
 
+    /**
+     * set max progress and update view.
+     *
+     * @param max Int
+     */
     fun setMax(max: Int) {
         mMax = max
         invalidate()
     }
 
     /**
-     *
+     * progress format,convert progress int value to custom text.
      */
     interface ProgressFormatter {
         fun format(progress: Int, max: Int): CharSequence
