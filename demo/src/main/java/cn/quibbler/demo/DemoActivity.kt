@@ -12,6 +12,13 @@ class DemoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityDemoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        initView()
+    }
+
+    private fun initView() {
+        val adapter: GridAdapter = GridAdapter(this)
+        binding.gridView.adapter = adapter
     }
 
 }
