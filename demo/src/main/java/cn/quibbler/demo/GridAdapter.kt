@@ -1,9 +1,11 @@
 package cn.quibbler.demo
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.LinearInterpolator
 import android.widget.BaseAdapter
 import cn.quibbler.circleprogress.CircleProgress
 
@@ -28,7 +30,47 @@ class GridAdapter(private val context: Context) : BaseAdapter() {
     }
 
     private fun renderCircleProgress(circleProgress: CircleProgress, position: Int) {
-        //TODO("difference circle progress")
+        when (position) {
+            1 -> {
+
+            }
+            2 -> {
+
+            }
+            3 -> {
+
+            }
+            4 -> {
+
+            }
+            5 -> {
+
+            }
+            6 -> {
+
+            }
+            7 -> {
+
+            }
+            else -> {
+                //empty
+            }
+        }
+    }
+
+    fun startProgressAnimation() {
+        val valueAnimator: ValueAnimator = ValueAnimator.ofInt(0, 100)
+        valueAnimator.duration = 2000L
+        valueAnimator.interpolator = LinearInterpolator()
+        valueAnimator.addUpdateListener {
+            val int = it.animatedValue as Int
+            //TODO
+        }
+        valueAnimator.start()
+    }
+
+    fun stopProgressAnimation() {
+        //TODO
     }
 
 }
