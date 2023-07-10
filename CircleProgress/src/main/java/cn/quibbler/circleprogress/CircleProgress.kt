@@ -14,6 +14,8 @@ import kotlin.math.sin
 
 /**
  *
+ * The simple use of ProgressBar requires dynamic display of button progress and color changes proportionally based on the amount of data in the job requirements.
+ *
  * Package:        cn.quibbler.circleprogress
  * ClassName:      CircleProgress
  * Description:    Customizable circular progress bar
@@ -47,8 +49,11 @@ class CircleProgress : View {
         private const val DEFAULT_PROGRESS_TEXT_SIZE = 12f
         private const val DEFAULT_PROGRESS_STROKE_WIDTH = 1f
 
-        private val COLOR_FFF2A670 = Color.parseColor("#fff2a670")
-        private val COLOR_FFD3D3D5 = Color.parseColor("#ffe3e3e5")
+        /**
+         * color see https://encycolorpedia.cn/named
+         */
+        private val COLOR_DEFAULT = Color.parseColor("#ea975d")
+        private val COLOR_BACKGROUND = Color.parseColor("#c2c2c7")
     }
 
     private val mProgressRectF = RectF()
@@ -82,11 +87,11 @@ class CircleProgress : View {
      */
     private var mProgressStrokeWidth = DEFAULT_PROGRESS_STROKE_WIDTH
 
-    private var mProgressTextColor = COLOR_FFF2A670
+    private var mProgressTextColor = COLOR_DEFAULT
     private var mProgressTextSize = DEFAULT_PROGRESS_TEXT_SIZE
 
-    private var mProgressStartColor = COLOR_FFF2A670
-    private var mProgressEndColor = COLOR_FFD3D3D5
+    private var mProgressStartColor = COLOR_DEFAULT
+    private var mProgressEndColor = COLOR_BACKGROUND
 
     private var mProgressBackgroundColor = Color.TRANSPARENT
 
@@ -132,15 +137,19 @@ class CircleProgress : View {
 
         mStyle = a.getInt(R.styleable.CircleProgress_progress_style, LINE)
         mShader = a.getInt(R.styleable.CircleProgress_progress_shader, LINEAR)
-        mCap = if (a.hasValue(R.styleable.CircleProgress_progress_stroke_cap)) Paint.Cap.values()[a.getInt(R.styleable.CircleProgress_progress_stroke_cap, 0)] else Paint.Cap.BUTT
+        mCap = if (a.hasValue(R.styleable.CircleProgress_progress_stroke_cap)) Paint.Cap.values()[a.getInt(
+            R.styleable.CircleProgress_progress_stroke_cap, 0
+        )] else Paint.Cap.BUTT
 
-        mProgressTextSize = a.getDimensionPixelSize(R.styleable.CircleProgress_progress_text_size, dip2px(context, DEFAULT_PROGRESS_TEXT_SIZE)).toFloat()
-        mProgressStrokeWidth = a.getDimensionPixelSize(R.styleable.CircleProgress_progress_stroke_width, dip2px(context, DEFAULT_PROGRESS_STROKE_WIDTH)).toFloat();
+        mProgressTextSize =
+            a.getDimensionPixelSize(R.styleable.CircleProgress_progress_text_size, dip2px(context, DEFAULT_PROGRESS_TEXT_SIZE)).toFloat()
+        mProgressStrokeWidth =
+            a.getDimensionPixelSize(R.styleable.CircleProgress_progress_stroke_width, dip2px(context, DEFAULT_PROGRESS_STROKE_WIDTH)).toFloat();
 
-        mProgressStartColor = a.getColor(R.styleable.CircleProgress_progress_start_color, COLOR_FFF2A670)
-        mProgressEndColor = a.getColor(R.styleable.CircleProgress_progress_end_color, COLOR_FFF2A670)
-        mProgressTextColor = a.getColor(R.styleable.CircleProgress_progress_text_color, COLOR_FFF2A670)
-        mProgressBackgroundColor = a.getColor(R.styleable.CircleProgress_progress_background_color, COLOR_FFD3D3D5)
+        mProgressStartColor = a.getColor(R.styleable.CircleProgress_progress_start_color, COLOR_DEFAULT)
+        mProgressEndColor = a.getColor(R.styleable.CircleProgress_progress_end_color, COLOR_DEFAULT)
+        mProgressTextColor = a.getColor(R.styleable.CircleProgress_progress_text_color, COLOR_DEFAULT)
+        mProgressBackgroundColor = a.getColor(R.styleable.CircleProgress_progress_background_color, COLOR_BACKGROUND)
 
         mStartDegree = a.getInt(R.styleable.CircleProgress_progress_start_degree, DEFAULT_START_DEGREE)
         mDrawBackgroundOutSideProgress = a.getBoolean(R.styleable.CircleProgress_drawBackgroundOutSideProgress, false)
@@ -198,14 +207,24 @@ class CircleProgress : View {
             var shader: Shader? = null
             when (mShader) {
                 LINEAR -> {
-                    shader = LinearGradient(mProgressRectF.left, mProgressRectF.top, mProgressRectF.left, mProgressRectF.bottom, mProgressStartColor, mProgressEndColor, Shader.TileMode.CLAMP)
+                    shader = LinearGradient(
+                        mProgressRectF.left,
+                        mProgressRectF.top,
+                        mProgressRectF.left,
+                        mProgressRectF.bottom,
+                        mProgressStartColor,
+                        mProgressEndColor,
+                        Shader.TileMode.CLAMP
+                    )
                     val matrix: Matrix = Matrix()
                     matrix.setRotate(LINEAR_START_DEGREE, mCenterX, mCenterY)
                     shader.setLocalMatrix(matrix)
                 }
+
                 RADIAL -> {
                     shader = RadialGradient(mCenterX, mCenterY, mRadius, mProgressStartColor, mProgressEndColor, Shader.TileMode.CLAMP)
                 }
+
                 SWEEP -> {
                     val radian = (mProgressStrokeWidth / Math.PI * 2.0f / mRadius)
                     val rotateDegrees: Float = -(if (mCap == Paint.Cap.BUTT && mStyle == SOLID_LINE) 0f else Math.toDegrees(radian).toFloat())
@@ -229,11 +248,12 @@ class CircleProgress : View {
      */
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+        if (canvas == null) return
 
-        canvas?.save()
-        canvas?.rotate(mStartDegree.toFloat(), mCenterX, mCenterY)
+        canvas.save()
+        canvas.rotate(mStartDegree.toFloat(), mCenterX, mCenterY)
         drawProgress(canvas)
-        canvas?.restore()
+        canvas.restore()
 
         drawProgressText(canvas)
     }
@@ -243,14 +263,14 @@ class CircleProgress : View {
      *
      * @param canvas [Canvas] to be draw text on.
      */
-    private fun drawProgressText(canvas: Canvas?) {
+    private fun drawProgressText(canvas: Canvas) {
         val progressText: CharSequence = mProgressFormatter?.format(mProgress, mMax) ?: ""
         if (TextUtils.isEmpty(progressText)) return
 
         mProgressTextPaint.textSize = mProgressTextSize
         mProgressTextPaint.color = mProgressTextColor
         mProgressTextPaint.getTextBounds(progressText.toString(), 0, progressText.length, mProgressTextRect)
-        canvas?.drawText(progressText, 0, progressText.length, mCenterX, mCenterY + mProgressTextRect.height() / 2, mProgressTextPaint)
+        canvas.drawText(progressText, 0, progressText.length, mCenterX, mCenterY + mProgressTextRect.height() / 2, mProgressTextPaint)
     }
 
     /**
@@ -258,17 +278,20 @@ class CircleProgress : View {
      *
      * @param canvas [Canvas] to be draw Progress on.
      */
-    private fun drawProgress(canvas: Canvas?) {
+    private fun drawProgress(canvas: Canvas) {
         when (mStyle) {
             SOLID -> {
                 drawSolidProgress(canvas)
             }
+
             SOLID_LINE -> {
                 drawSolidLineProgress(canvas)
             }
+
             LINE -> {
                 drawLineProgress(canvas)
             }
+
             else -> {
                 drawLineProgress(canvas)
             }
@@ -424,7 +447,7 @@ class CircleProgress : View {
     }
 
     /**
-     * set progress text color,default is [COLOR_FFF2A670]
+     * set progress text color,default is [COLOR_DEFAULT]
      *
      * @param progressTextColor Int
      */
